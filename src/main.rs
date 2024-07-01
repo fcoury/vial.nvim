@@ -93,15 +93,17 @@ fn handle_client(mut stream: TcpStream) {
         Ok(res) => res,
         Err(e) => {
             let err_msg = format!("Failed to execute command: {}", e);
-            eprintln!("{}", err_msg);
+            eprintln!("error: {}", err_msg);
             stream.write(err_msg.as_bytes()).unwrap();
             stream.flush().ok();
             return;
         }
     };
 
-    let response = "OK"; // String::from_utf8_lossy(&output.stdout).to_string();
-                         // let error = String::from_utf8_lossy(&output.stderr).to_string();
+    let response = "OK";
+
+    // String::from_utf8_lossy(&output.stdout).to_string();
+    // let error = String::from_utf8_lossy(&output.stderr).to_string();
 
     stream.write(response.as_bytes()).unwrap();
     stream.flush().ok();
@@ -142,7 +144,10 @@ fn execute_cmd(cmd: &str) -> anyhow::Result<()> {
         }
     });
 
-    let _status = child.wait()?;
+    let status = child.wait()?;
+    if !status.success() {
+        return Err(anyhow::anyhow!("Command failed with exit code: {}", status));
+    }
 
     Ok(())
 }

@@ -1,10 +1,12 @@
 local M = {}
 local last_test = nil
 local vial_path = "vial"
+local test_cmd = "cargo test -- %s --nocapture --color=always"
 
 function M.setup(opts)
 	opts = opts or {}
 	vial_path = opts.vial_path or vial_path
+	test_cmd = opts.command or test_cmd
 end
 
 local function current_test_name()
@@ -53,7 +55,8 @@ local function run_command(command)
 end
 
 local function run_test(test_name)
-	local cmd = "cargo test -- " .. test_name .. " --nocapture --color=always"
+	local cmd = string.format(test_cmd, test_name)
+	print(cmd)
 	run_command(cmd)
 end
 
