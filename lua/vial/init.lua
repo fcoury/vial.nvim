@@ -2,11 +2,16 @@ local M = {}
 local last_test = nil
 local vial_path = "vial"
 local test_cmd = "cargo test -- %s --nocapture --color=always"
+local toggle_state = {
+	enabled = false,
+	extensions = {},
+}
 
 function M.setup(opts)
 	opts = opts or {}
 	vial_path = opts.vial_path or vial_path
 	test_cmd = opts.command or test_cmd
+	toggle_state.extensions = opts.extensions or {}
 end
 
 local function current_test_name()
@@ -48,15 +53,12 @@ local function run_command(command)
 
 	-- Execute the Rust binary and pass the command
 	local handle = io.popen(string.format("%s send '%s' > /dev/null 2>&1", vial_path, command))
-	local result = handle:read("*a")
-	handle:close()
-
-	print(result)
+	-- local result = handle:read("*a")
+	-- handle:close()
 end
 
 local function run_test(test_name)
 	local cmd = string.format(test_cmd, test_name)
-	print(cmd)
 	run_command(cmd)
 end
 
@@ -81,6 +83,43 @@ function M.run_last_test()
 	run_test(last_test)
 end
 
+local function is_valid_extension(extension)
+	for _, ext in ipairs(toggle_state.extensions) do
+		if ext == extension then
+			return true
+		end
+	end
+	return false
+end
+
+local function get_extension(filename)
+	return filename:match("^.+(%..+)$")
+end
+
+local function on_buf_write_post()
+	if not toggle_state.enabled then
+		return
+	end
+
+	local filename = vim.api.nvim_buf_get_name(0)
+	local extension = get_extension(filename)
+
+	if is_valid_extension(extension) then
+		M.run_test()
+	end
+end
+
+function M.toggle_automated_tests()
+	toggle_state.enabled = not toggle_state.enabled
+	if toggle_state.enabled then
+		vim.cmd([[autocmd BufWritePost * lua require'vial'.on_buf_write_post()]])
+		print("Automated tests enabled")
+	else
+		vim.cmd([[autocmd! BufWritePost * lua require'vial'.on_buf_write_post()]])
+		print("Automated tests disabled")
+	end
+end
+
 vim.api.nvim_set_keymap("n", "<leader>tt", "<cmd>lua require'vial'.run_test()<cr>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap(
 	"n",
@@ -88,5 +127,15 @@ vim.api.nvim_set_keymap(
 	"<cmd>lua require'vial'.run_last_test()<cr>",
 	{ noremap = true, silent = true }
 )
+vim.api.nvim_set_keymap(
+	"n",
+	"<leader>ta",
+	"<cmd>lua require'vial'.toggle_automated_tests()<cr>",
+	{ noremap = true, silent = true }
+)
+
+function M.on_buf_write_post()
+	on_buf_write_post()
+end
 
 return M
