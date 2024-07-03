@@ -1,6 +1,6 @@
 # vial.nvim
 
-<img src="assets/logo.png" alt="Vial Logo" width="0" height="120" align="right"/>
+<img src="assets/logo.png" alt="Vial Logo" width="60" height="120" align="right"/>
 
 vial.nvim is a Neovim plugin that triggers commands on a separate terminal, primarily designed for running unit tests.
 
@@ -15,6 +15,10 @@ It provides an efficient workflow for developers by automatically running tests 
 - Easy-to-use keybindings for various test-related actions
 
 ## Installation
+
+### Executable
+
+Download the `vial` executable from the [Latest Release](https://github.com/fcoury/vial.nvim/releases/latest).
 
 ### Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 
@@ -104,6 +108,8 @@ require("vial").setup({
 Adjust the `vial_path` to point to your vial executable.
 
 ## Usage
+
+Start the vial server with the `vial server` command on the terminal you want to use for running your commands.
 
 vial.nvim provides the following keybindings by default:
 
