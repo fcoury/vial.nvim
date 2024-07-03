@@ -8,6 +8,8 @@ It provides an efficient workflow for developers by automatically running tests 
 
 ## Features
 
+https://github.com/fcoury/vial.nvim/assets/1371/c50fd29c-daa5-47a3-bee1-3e8c554eb40d
+
 - Automatically runs tests on file save
 - Runs the current test if a test is detected under cursor or repeats last test execution
 - Customizable for different file types and test commands
