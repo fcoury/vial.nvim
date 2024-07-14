@@ -61,7 +61,12 @@ local function run_test(test_name)
 end
 
 function M.run_test()
-	local test_name = get("extract")()
+	local extract = get("extract")
+	if extract == nil then
+		return
+	end
+
+	local test_name = extract()
 
 	if test_name == nil then
 		print("No test found")
