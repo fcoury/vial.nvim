@@ -134,30 +134,35 @@ function M.show_last_test()
 	print(last_test)
 end
 
-vim.api.nvim_set_keymap("n", "<leader>tt", "<cmd>lua require'vial'.run_test()<cr>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap(
+	"n",
+	"<leader>tt",
+	"<cmd>lua require'vial'.run_test()<cr>",
+	{ noremap = true, silent = true, desc = "Run test under cursor with vial" }
+)
 vim.api.nvim_set_keymap(
 	"n",
 	"<leader>tl",
 	"<cmd>lua require'vial'.run_last_test()<cr>",
-	{ noremap = true, silent = true }
+	{ noremap = true, silent = true, desc = "Re-run last test with vial" }
 )
 vim.api.nvim_set_keymap(
 	"n",
 	"<leader>tc",
 	"<cmd>lua require'vial'.clear_last_test()<cr>",
-	{ noremap = true, silent = true }
+	{ noremap = true, silent = true, desc = "Clear last vial test" }
 )
 vim.api.nvim_set_keymap(
 	"n",
 	"<leader>ta",
 	"<cmd>lua require'vial'.toggle_active()<cr>",
-	{ noremap = true, silent = true }
+	{ noremap = true, silent = true, desc = "Enable/disable vial" }
 )
 vim.api.nvim_set_keymap(
 	"n",
 	"<leader>ts",
 	"<cmd>lua require'vial'.show_last_test()<cr>",
-	{ noremap = true, silent = true }
+	{ noremap = true, silent = true, desc = "Show last test executed by vail" }
 )
 
 function M.on_buf_write_post()
