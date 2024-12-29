@@ -2,6 +2,7 @@ local M = {}
 local vial_path = nil
 local file_types = nil
 local enabled = false
+local uv = vim.loop
 
 function M.setup(opts)
 	opts = opts or {}
@@ -14,12 +15,33 @@ end
 
 -- Function to get the current context and run command
 local function run_command(command)
-	local handle = io.popen(string.format("%s send '%s' > /dev/null 2>&1", vial_path, command))
+	local stdin = assert(uv.new_pipe())
+	local stdout = assert(uv.new_pipe())
+	local stderr = assert(uv.new_pipe())
 
-	-- we don't handle responses yet
-	-- local result = handle:read("*a")
-	-- handle:close()
+	local handle, pid = uv.spawn(vial_path, {
+		args = { "send", command },
+		stdio = { stdin, stdout, stderr },
+	}, function(code, signal) -- on exit
+		stdin:close()
+		stdout:close()
+		stderr:close()
+	end)
+
+	if not handle then
+		error(string.format("Failed to spawn process: %s", pid))
+	end
 end
+
+-- old sync way
+-- -- Function to get the current context and run command
+-- local function run_command(command)
+-- 	local handle = io.popen(string.format("%s send '%s' > /dev/null 2>&1", vial_path, command))
+--
+-- 	-- we don't handle responses yet
+-- 	-- local result = handle:read("*a")
+-- 	-- handle:close()
+-- end
 
 local function current_settings()
 	if file_types == nil then
